@@ -1,34 +1,35 @@
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
-const products = require("./data/Products")
+const products = require("./data/Products");
 dotenv.config();
 const PORT = process.env.PORT;
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 //connect db
-mongoose.connect(process.env.MONGOOSEDB_RUL).then(()=>console.log('db connect')).then((err)=>{
+mongoose
+  .connect(process.env.MONGOOSEDB_RUL)
+  .then(() => console.log("db connect"))
+  .then((err) => {
     err;
-})
+  });
 
-const databaseSeeder = require('./databaseSeeder')
+const databaseSeeder = require("./databaseSeeder");
+const userRoute = require("./routes/User");
+
+app.use(express.json());
+
 
 //database seeder routers
-app.use('/api/seed', databaseSeeder )
+app.use("/api/seed", databaseSeeder);
+
+//routes for users
+//api/users/login
+app.use("/api/users", userRoute);
 
 app.listen(PORT || 9000, () => {
-    console.log(`sever listening on port ${PORT}`)
+  console.log(`sever listening on port ${PORT}`);
 });
-
-
-
-
-
-
-
-
-
-
 
 
 

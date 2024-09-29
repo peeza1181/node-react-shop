@@ -1,11 +1,22 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ProductDetail } from "./pages/ProductDetail.jsx";
+import { Home } from "./pages/Home.jsx";
 
-import { Home } from "./pages/Home";
-
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/detail",
+    element: <ProductDetail />,
+  },
+]);
 
 function App() {
   return (
     <>
-      <Home/>
+      <RouterProvider router={router} />
     </>
   );
 }

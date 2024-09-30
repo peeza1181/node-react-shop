@@ -1,32 +1,37 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 import { ProductDetail } from "./pages/ProductDetail.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Login } from "./pages/auth/Login.jsx";
 import { Register } from "./pages/auth/Register.jsx";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />,
-  },
-  {
-    path: "/products/:id",
-    element: <ProductDetail />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/register",
-    element: <Register/>,
-  },
-]);
+import { useSelector } from "react-redux";
 
 function App() {
+  const userLoginReducer = useSelector((state) => state.userLoginReducer);
+  const { userInfo } = userLoginReducer;
+
   return (
     <>
-      <RouterProvider router={router} />
+      <Router>
+        <Routes>
+          <Route exact path="/" element={<Home />}></Route>
+          <Route exact path="/products/:id" element={<ProductDetail />}></Route>
+          <Route
+            exact
+            path="/login"
+            element={userInfo ? <Navigate to="/"></Navigate> : <Login />}
+          ></Route>
+          <Route
+            exact
+            path="/register"
+            element={userInfo ? <Navigate to="/"></Navigate> : <Register />}
+          ></Route>
+        </Routes>
+      </Router>
     </>
   );
 }

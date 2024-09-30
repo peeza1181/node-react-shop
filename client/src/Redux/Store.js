@@ -4,6 +4,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import { productListReducer, productReducer } from "./Reducers/Product.js";
 
 import { thunk } from "redux-thunk";
+import { userLoginReducer, userRegisterReducer } from "./Reducers/User.js";
 
 const persistConfig = {
   key: "root",
@@ -14,6 +15,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   productListReducer,
   productReducer,
+  userLoginReducer,
+  userRegisterReducer,
 });
 
 const middleware = [thunk];

@@ -1,6 +1,18 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { UserDropdown } from "../Components/UserDropdown";
+import { Link } from "react-router-dom";
+import { userLogoutAction } from "../Redux/Actions/User";
 
 export const Navbar = () => {
+  const userLoginReducer = useSelector((state) => state.userLoginReducer);
+  const { userInfo } = userLoginReducer;
+  const dispatch = useDispatch();
+
+  const logoutHandler = () => {
+    dispatch(userLogoutAction());
+  };
+
   return (
     <div>
       <nav class="bg-white border-gray-200 dark:bg-gray-900">
@@ -15,16 +27,21 @@ export const Navbar = () => {
               alt="Flowbite Logo"
             />
             <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-              Flowbite
+              Node Shop
             </span>
           </a>
           <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-            <button
-              type="button"
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Get started
-            </button>
+            {!userInfo ? (
+              <Link
+                to="/register"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                Get started
+              </Link>
+            ) : (
+              <UserDropdown logoutHandler={logoutHandler}></UserDropdown>
+            )}
+
             <button
               data-collapse-toggle="navbar-cta"
               type="button"
@@ -62,30 +79,6 @@ export const Navbar = () => {
                   aria-current="page"
                 >
                   Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  About
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Services
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Contact
                 </a>
               </li>
             </ul>

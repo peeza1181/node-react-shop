@@ -38,7 +38,7 @@ export const userLoginAction = (email, password) => async (dispatch) => {
 
 //user logout action
 export const userLogoutAction = () => async (dispatch) => {
-  localStorage.setItem("userInfo");
+  localStorage.removeItem("userInfo");
   dispatch({ type: USER_LOGOUT });
   document.location.href = "/login";
 };

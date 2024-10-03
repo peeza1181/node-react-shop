@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UserDropdown } from "../Components/UserDropdown";
 import { Link } from "react-router-dom";
 import { userLogoutAction } from "../Redux/Actions/User";
+import Checkout from "../pages/Checkout";
 
 export const Navbar = () => {
   const userLoginReducer = useSelector((state) => state.userLoginReducer);
@@ -16,6 +17,8 @@ export const Navbar = () => {
   const logoutHandler = () => {
     dispatch(userLogoutAction());
   };
+
+  const [open, setOpen] = useState(false);
 
   return (
     <div>
@@ -52,6 +55,7 @@ export const Navbar = () => {
                   class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
                   aria-controls="navbar-cta"
                   aria-expanded="false"
+                  onClick={()=>setOpen(true)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -69,6 +73,8 @@ export const Navbar = () => {
                   </svg>
                   <span>{qty}</span>
                 </button>
+
+                <Checkout open={open} setOpen={setOpen}></Checkout>
               </>
             )}
 

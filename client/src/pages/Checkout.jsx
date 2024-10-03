@@ -8,16 +8,27 @@ import {
 } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
-import { removeFromCartAction } from "../Redux/Actions/Cart";
+import { addToCartAction, removeFromCartAction } from "../Redux/Actions/Cart";
 
 export default function Checkout({ open, setOpen }) {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cartReducer);
   const { cartItems } = cart;
 
+  console.log(cartItems);
+
   const removeFromCartHandle = (id) => {
     dispatch(removeFromCartAction(id));
   };
+
+  const addToCartHandler = (id, qty) => {
+    console.log("Adding to cart:", id, qty);
+    dispatch(addToCartAction(id, qty));
+  };
+
+  const total = cartItems
+    .reduce((total, item) => total + item.qty * item.price, 0)
+    .toFixed(2);
 
   return (
     <Dialog
@@ -83,14 +94,34 @@ export default function Checkout({ open, setOpen }) {
                               </div>
                               <div className="flex flex-1 items-end justify-between text-sm">
                                 <p className="text-gray-500">
-                                  Qty {product.qty}
+                                  Qty
+                                  <select
+                                    value={product.qty}
+                                    onChange={(e) =>
+                                      addToCartHandler(
+                                        product.product,
+                                        Number(e.target.value)
+                                      )
+                                    }
+                                    class="rounded ml-2 border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10"
+                                  >
+                                    {[
+                                      ...Array(product.countInStock).keys(),
+                                    ].map((x) => (
+                                      <option key={x + 1} value={x + 1}>
+                                        {x + 1}
+                                      </option>
+                                    ))}
+                                  </select>
                                 </p>
 
                                 <div className="flex">
                                   <button
                                     type="button"
                                     className="font-medium text-indigo-600 hover:text-indigo-500"
-                                    onClick={()=>removeFromCartHandle(product.product)}
+                                    onClick={() =>
+                                      removeFromCartHandle(product.product)
+                                    }
                                   >
                                     Remove
                                   </button>
@@ -107,7 +138,7 @@ export default function Checkout({ open, setOpen }) {
                 <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                   <div className="flex justify-between text-base font-medium text-gray-900">
                     <p>Subtotal</p>
-                    <p>$262.00</p>
+                    <p>${total}</p>
                   </div>
                   <p className="mt-0.5 text-sm text-gray-500">
                     Shipping and taxes calculated at checkout.

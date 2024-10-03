@@ -18,12 +18,13 @@ const rootReducer = combineReducers({
   productReducer,
   userLoginReducer,
   userRegisterReducer,
-  cartReducer
+  cartReducer,
 });
-
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-export const store = createStore(persistedReducer, applyMiddleware(thunk)); //Apply thunk middleware
-
-export let persistor = persistStore(store);
+export const store = createStore(
+  persistedReducer,
+  applyMiddleware(thunk) // Apply thunk middleware
+);
+export const persistor = persistStore(store);

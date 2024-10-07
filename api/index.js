@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const products = require("./data/Products");
 dotenv.config();
 const PORT = process.env.PORT;
-const cors = require("cors")
+const cors = require("cors");
 const mongoose = require("mongoose");
 
 //connect db
@@ -22,8 +22,7 @@ const orderRoute = require("./routes/Order");
 
 app.use(express.json());
 
-app.use(cors())
-
+app.use(cors());
 
 //database seeder routers
 app.use("/api/seed", databaseSeeder);
@@ -37,12 +36,14 @@ app.use("/api/products", productRoute);
 //routes for orders
 app.use("/api/orders", orderRoute);
 
+//paypal payment api for client key
+app.use("/api/config/paypal", (req, res) => {
+  res.send(process.env.PAYPAL_CLIENT_ID);
+});
+
 app.listen(PORT || 9000, () => {
   console.log(`sever listening on port ${PORT}`);
 });
-
-
-
 
 //api product test route
 //app.get('/api/products', (req, res) => {

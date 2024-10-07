@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layouts } from "../Layouts/Layouts";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CartItem } from "../Components/CartItem";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { BASE_URL } from "../Redux/Constants/BASE_URL";
+import axios from "axios";
+import { orderAction } from "../Redux/Actions/Order";
+import { saveShippingAddressAction } from "../Redux/Actions/Cart";
 
 export const PlaceOrder = () => {
   const cart = useSelector((state) => state.cartReducer);
@@ -29,8 +33,47 @@ export const PlaceOrder = () => {
   //shipping address form data
   const [address, setAddress] = useState(shippingAddress.address);
   const [city, setCity] = useState(shippingAddress.city);
-  const [postalcode, setPostalcode] = useState(shippingAddress.postalcode);
+  const [postalCode, setpostalCode] = useState(shippingAddress.postalCode);
   const [country, setCountry] = useState(shippingAddress.country);
+  const [clientId, setClientId] = useState(null);
+  useEffect(() => {
+    getPaypalCLientID();
+  });
+  const getPaypalCLientID = async () => {
+    const response = await axios.get(`${BASE_URL}/api/config/paypal`);
+    const fetchedClientId = response.data;
+    setClientId(fetchedClientId);
+  };
+
+  const dispatch = useDispatch();
+  const successPaymentHandler = async (paymentResult) => {
+    try {
+      dispatch(
+        orderAction({
+          orderItems: cart.cartItems,
+          shippingAddress: cart.shippingAddress,
+          totalPrice: total,
+          paymentMethod: "paypal",
+          price: subtotal,
+          taxPrice: taxPrice,
+          shippingPrice: shippingPrice,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const saveShippingAddress = () => {
+    dispatch(
+      saveShippingAddressAction({
+        address,
+        city,
+        postalCode,
+        country,
+      })
+    );
+  };
 
   return (
     <>
@@ -103,8 +146,8 @@ export const PlaceOrder = () => {
                     type="text"
                     id="postalcode"
                     name="postalcode"
-                    value={postalcode}
-                    onChange={(e) => setPostalcode(e.target.value)}
+                    value={postalCode}
+                    onChange={(e) => setpostalCode(e.target.value)}
                     class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                   />
                 </div>
@@ -121,12 +164,37 @@ export const PlaceOrder = () => {
                     class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                   />
                 </div>
-                <PayPalScriptProvider options={{ clientId: "test" }}>
-                  <PayPalButtons
-                  // createOrder={createOrder}
-                  // onApprove={onApprove}
-                  />
-                </PayPalScriptProvider>
+
+                <button
+                  onClick={saveShippingAddress}
+                  className=" mb-10 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
+                >
+                  Save Shipping Address
+                </button>
+
+                {clientId && (
+                  <PayPalScriptProvider options={{ clientId: clientId }}>
+                    <PayPalButtons
+                      createOrder={(data, action) => {
+                        return action.order.create({
+                          purchase_units: [
+                            {
+                              amount: {
+                                currency_code: "USD",
+                                value: total,
+                              },
+                            },
+                          ],
+                        });
+                      }}
+                      onApprove={(data, actions) => {
+                        return actions.order.capture().then(function (details) {
+                          successPaymentHandler(details);
+                        });
+                      }}
+                    />
+                  </PayPalScriptProvider>
+                )}
               </div>
             </div>
           </div>

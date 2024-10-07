@@ -40,23 +40,43 @@ orderRoute.post(
   })
 );
 
-//orderpayment route
+//order detail
+orderRoute.get(
+  "/:id",
+  protect,
+  asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id).populate(
+      "user",
+      "name email"
+    );
+    if (order) {
+      res.status(200).json(order);
+    } else {
+      res.status(404);
+      throw new Error("Order Not Found");
+    }
+  })
+);
+
+//update order status for payment
+
+//order payment
 orderRoute.put(
   "/:id/payment",
   protect,
   asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
-
     if (order) {
       order.isPaid = true;
       order.paidAt = Date.now();
       order.paymentResult = {
         id: req.body.id,
         status: req.body.status,
-        updated_time: req.body.updated_time,
-        email_address: req.body.email_address,
+        update_time: req.body.create_time,
+        email_address: req.body.payer.email_address,
       };
-      const updatedOrder = await order.save();
+      const updatedOrder = order.save();
+
       res.status(200).json(updatedOrder);
     } else {
       res.status(404);
@@ -65,7 +85,7 @@ orderRoute.put(
   })
 );
 
-//get all the orders
+//order lists
 orderRoute.get(
   "/",
   protect,
@@ -80,19 +100,5 @@ orderRoute.get(
   })
 );
 
-//get one order by id
-orderRoute.get(
-  "/:id/",
-  protect,
-  asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id).populate("user", "email");
-    if (order) {
-      res.status(200).json(order);
-    } else {
-      res.status(404);
-      throw new Error("Order Not Found");
-    }
-  })
-);
 
 module.exports = orderRoute;

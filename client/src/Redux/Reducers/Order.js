@@ -59,12 +59,12 @@ export const orderPaymentReducer = (state = {}, action) => {
   }
 };
 
-export const orderListReducer = (state = {order:[]}, action) => {
+export const orderListReducer = (state = { orders: [] }, action) => {
   switch (action.type) {
     case ORDER_LIST_REQ:
       return { loading: true };
     case ORDER_LIST_REQ_SUCCESS:
-      return { loading: false, success: true, order: action.payload };
+      return { loading: false, success: true, orders: action.payload };
     case ORDER_LIST_REQ_FAIL:
       return { loading: false, error: action.payload };
     default:

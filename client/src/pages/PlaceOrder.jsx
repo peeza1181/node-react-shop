@@ -5,8 +5,11 @@ import { CartItem } from "../Components/CartItem";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { BASE_URL } from "../Redux/Constants/BASE_URL";
 import axios from "axios";
-import { orderAction } from "../Redux/Actions/Order";
+import { orderAction, orderPaymentAction } from "../Redux/Actions/Order";
 import { saveShippingAddressAction } from "../Redux/Actions/Cart";
+
+import { useNavigate } from "react-router-dom";
+import { ORDER_RESET } from "../Redux/Constants/Order";
 
 export const PlaceOrder = () => {
   const cart = useSelector((state) => state.cartReducer);
@@ -36,8 +39,23 @@ export const PlaceOrder = () => {
   const [postalCode, setpostalCode] = useState(shippingAddress.postalCode);
   const [country, setCountry] = useState(shippingAddress.country);
   const [clientId, setClientId] = useState(null);
+
+  //added for order confirm
+  const orderReducer = useSelector((state) => state.orderReducer);
+  const { order, success } = orderReducer;
+  const [paymentResult, setPaymentResult] = useState({});
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     getPaypalCLientID();
+
+    //add for order confirm , payment success
+    if (success) {
+      dispatch({ type: ORDER_RESET });
+      dispatch(orderPaymentAction(order._id, paymentResult));
+      navigate(`/order/${order._id}`, {});
+    }
   });
   const getPaypalCLientID = async () => {
     const response = await axios.get(`${BASE_URL}/api/config/paypal`);
@@ -48,6 +66,7 @@ export const PlaceOrder = () => {
   const dispatch = useDispatch();
   const successPaymentHandler = async (paymentResult) => {
     try {
+      setPaymentResult(paymentResult);
       dispatch(
         orderAction({
           orderItems: cart.cartItems,

@@ -11,6 +11,8 @@ import { Register } from "./pages/auth/Register.jsx";
 import { useSelector } from "react-redux";
 import Checkout from "./pages/Checkout.jsx";
 import { PlaceOrder } from "./pages/PlaceOrder.jsx";
+import { OrderHistory } from "./pages/OrderHistory.jsx";
+import { OrderConfirm } from "./pages/OrderConfirm.jsx";
 
 function App() {
   const userLoginReducer = useSelector((state) => state.userLoginReducer);
@@ -34,6 +36,8 @@ function App() {
           ></Route>
           <Route exact path="/checkout" element={<Checkout />}></Route>
           <Route exact path="/placeorder" element={<PlaceOrder />}></Route>
+          <Route exact path="/order/:id" element={<OrderConfirm/>}></Route>
+          <Route exact path="/order-history" element={<OrderHistory/>}></Route>
         </Routes>
       </Router>
     </>

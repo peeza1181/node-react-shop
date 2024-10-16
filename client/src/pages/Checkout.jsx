@@ -12,6 +12,10 @@ import { Link } from "react-router-dom";
 import { CartItem } from "../Components/CartItem";
 
 export default function Checkout({ open, setOpen }) {
+  // ตรวจสอบสถานะการล็อกอินของผู้ใช้
+  const userLoginReducer = useSelector((state) => state.userLoginReducer);
+  const { userInfo } = userLoginReducer;
+
   const cart = useSelector((state) => state.cartReducer);
   const { cartItems } = cart;
 
@@ -69,7 +73,7 @@ export default function Checkout({ open, setOpen }) {
                   </p>
                   <div className="mt-6">
                     <Link
-                      to="/placeorder"
+                      to={userInfo ? "/placeorder" : "/login"} // เปลี่ยนเส้นทางตามสถานะการล็อกอิน
                       className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                     >
                       Checkout
